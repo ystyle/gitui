@@ -109,6 +109,8 @@ pub fn get_tags(repo_path: &RepoPath) -> Result<Tags> {
 	let tag_names = repo.tag_names(None)?;
 
 	for name in tag_names.iter().flatten() {
+		let Some(name) = name else { continue };
+
 		let reference = match repo.find_reference(
 			&format!("refs/tags/{name}"),
 		) {
@@ -121,7 +123,8 @@ pub fn get_tags(repo_path: &RepoPath) -> Result<Tags> {
 
 		if let (Some(commit_id), Ok(tag)) = (target, tag) {
 			let name = tag.name().unwrap_or(name).to_string();
-			let annotation = tag.message().map(|s| s.to_string());
+			let annotation =
+				tag.message()?.map(ToString::to_string);
 			adder(commit_id.into(), Tag { name, annotation });
 		} else if let Some(commit_id) = target {
 			adder(commit_id.into(), Tag::new(name));

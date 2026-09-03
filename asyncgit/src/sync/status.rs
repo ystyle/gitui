@@ -354,7 +354,7 @@ pub fn get_status(
 	let mut res = Vec::with_capacity(statuses.len());
 
 	for entry in statuses.iter() {
-		let Some(path) = entry.path() else {
+		let Ok(path) = entry.path() else {
 			continue;
 		};
 
